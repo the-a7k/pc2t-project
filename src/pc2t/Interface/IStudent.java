@@ -1,0 +1,7 @@
+package pc2t.Interface;
+
+public interface IStudent {
+	public boolean addGrade(int grade);
+	public int getGradeSum();
+	public float calculateGradeAverage();
+}

@@ -1,33 +1,52 @@
-package pc2t;
+package pc2t.Student;
 
 import java.util.ArrayList;
 
-public abstract class Student {
+import pc2t.Interface.IStudent;
+
+public abstract class Student implements IStudent {
 	private static int nextID = 1;
 	private int id;
 	private String firstName;
 	private String lastName;
 	private int yearBorn;
+	private StudyProgramme studyProgramme;
 	private ArrayList<Integer> grades;
 	
-	public Student(String firstName, String lastName, int yearBorn) {
+	public Student(String firstName, String lastName, int yearBorn, StudyProgramme studyProgramme) {
 		this.id = nextID++;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.yearBorn = yearBorn;
+		this.studyProgramme = studyProgramme;
 		this.grades = new ArrayList<>();
+	}
+	
+	public enum StudyProgramme {
+		IBE,
+		TLI
 	}
 	
 	@Override
 	public String toString() {
-		return "Student Type: " + this.getClass().getSimpleName() + 
-				"\nStudent Detail:" 	+
-				"\n\tID: " 				+ this.id + 
-				" \n\tFirst Name: " 	+ this.firstName + 
-				" \n\tLast Name: " 		+ this.lastName + 
+		return "Student detail:" 		+
+				"\n\tID: " 				+ this.id +
+				"\n\tStudy programme: " + this.studyProgramme + 
+				"\n\tFirst Name: " 		+ this.firstName + 
+				"\n\tLast Name: " 		+ this.lastName + 
 				"\n\tYear born: " 		+ this.yearBorn + 
 				"\n\tGrades: " 			+ this.grades + 
 				"\n\tGrade average: " 	+ this.calculateGradeAverage();
+	}
+	
+	public abstract String specialAbility();
+	
+	public static int getNextID() {
+		return nextID;
+	}
+
+	public static void setNextID(int nextID) {
+		Student.nextID = nextID;
 	}
 
 	public int getID() {
@@ -61,12 +80,28 @@ public abstract class Student {
 				.append(this.getLastName())
 				.toString();
 	}
+	
+	public int getYearBorn() {
+		return yearBorn;
+	}
+
+	public void setYearBorn(int yearBorn) {
+		this.yearBorn = yearBorn;
+	}
+	
+	public StudyProgramme getStudyProgramme() {
+		return studyProgramme;
+	}
+
+	public void setStudyProgramme(StudyProgramme studyProgramme) {
+		this.studyProgramme = studyProgramme;
+	}
 
 	public ArrayList<Integer> getGrades() {
 		return grades;
 	}
 
-	public boolean addGrades(int grade) {
+	public boolean addGrade(int grade) {
 		if (grade > 5 || grade < 1) {
 			return false;
 		}
@@ -75,9 +110,9 @@ public abstract class Student {
 		return true;
 	}
 	
-	public float calculateGradeAverage() {
-		Integer gradeSum = 0;
-		Integer totalGrades = this.grades.size();
+	public int getGradeSum() {
+		int gradeSum = 0;
+		int totalGrades = this.grades.size();
 		
 		if (totalGrades < 0) {
 			return 0;
@@ -86,6 +121,13 @@ public abstract class Student {
 		for (int i = 0; i < totalGrades; i++) {
 			gradeSum += this.grades.get(i);
 		}
-		return (float) gradeSum / totalGrades;	
+		return gradeSum;	
+	}
+	
+	public float calculateGradeAverage() {
+		if (this.grades.size() == 0) {
+			return 0;
+		}
+		return (float) getGradeSum() / this.grades.size();	
 	}
 }

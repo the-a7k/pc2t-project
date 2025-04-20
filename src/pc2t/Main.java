@@ -1,32 +1,38 @@
 package pc2t;
 
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.sql.Connection;
+import java.sql.SQLException;
 
-import pc2t.IBEStudent.HashVariant;
+import pc2t.Query.ConnectDB;
+import pc2t.Student.Database;
+import pc2t.Student.StudentIBE;
+import pc2t.Student.StudentTLI;
 
 public class Main {
 
 	public static void main(String[] args) {
-		TLIStudent s1 = new TLIStudent("Petr", "Pavel", 2005);
-		s1.addGrades(5);
-		s1.addGrades(2);
+		StudentIBE s1 = new StudentIBE("Jan", "Zebra", 2005);
+		StudentTLI s2 = new StudentTLI("Jakub", "Brambora", 1999);
+		Database database = new Database();
 		
-		IBEStudent s2 = new IBEStudent("Andrej", "Pavel", 1999);
-		
-		StudentDatabase database = new StudentDatabase();
 		database.addStudent(s1);
 		database.addStudent(s2);
-		
-		database.addStudentGrade(1, 3);
-		database.addStudentGrade(1, 3);
-		database.addStudentGrade(1, 0);
+
+		database.addStudentGrade(1, 1);
+		database.addStudentGrade(1, 1);
+		database.addStudentGrade(2, 5);
 		database.addStudentGrade(2, 3);
-		//database.addStudentGrade(100, 3);
-		//database.removeStudent(0);
+			
+		//database.removeStudent(1);
 		
-		System.out.println(database.findStudent(1));
-		System.out.println(database.findStudent(2));
+		database.printStudyProgrammeGradeAverage();
+		database.printStudyProgrammeStudentCount();
+		database.printStudyProgrammeSortedStudents();
+		database.printSpecialAbility(2);
+		database.printSpecialAbility(1);
+		
+	    Connection conn = ConnectDB.connect();
+		
 
 	}
 }
