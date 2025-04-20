@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 
 public class StudentTLI extends Student {
-    private static final HashMap<Character, String> MORSE_MAP = StudentTLI.initializeMorseMap();
+    private static final HashMap<Character, String> MORSE_MAP = initializeMorseMap();
 
 	public StudentTLI(String firstName, String lastName, int yearBorn) {
 		super(firstName, lastName, yearBorn, StudyProgramme.TLI);

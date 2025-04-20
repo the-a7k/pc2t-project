@@ -29,14 +29,14 @@ public abstract class Student implements IStudent {
 	
 	@Override
 	public String toString() {
-		return "Student detail:" 		+
-				"\n\tID: " 				+ this.id +
-				"\n\tStudy programme: " + this.studyProgramme + 
-				"\n\tFirst Name: " 		+ this.firstName + 
-				"\n\tLast Name: " 		+ this.lastName + 
-				"\n\tYear born: " 		+ this.yearBorn + 
-				"\n\tGrades: " 			+ this.grades + 
-				"\n\tGrade average: " 	+ this.calculateGradeAverage();
+		return "Student:" 		+
+				"\n\tID: " 					+ this.id +
+				"\n\tStudijni program: " 	+ this.studyProgramme + 
+				"\n\tJmeno: " 				+ this.firstName + 
+				"\n\tPrijmeni: " 			+ this.lastName + 
+				"\n\tRok narozeni: " 		+ this.yearBorn + 
+				"\n\tZnamky: " 				+ this.grades + 
+				"\n\tStudijni prumer: " 	+ this.calculateGradeAverage();
 	}
 	
 	public abstract String specialAbility();
@@ -99,6 +99,10 @@ public abstract class Student implements IStudent {
 
 	public ArrayList<Integer> getGrades() {
 		return grades;
+	}
+	
+	public void setGrades(ArrayList<Integer> grades) {
+		this.grades = grades;
 	}
 
 	public boolean addGrade(int grade) {

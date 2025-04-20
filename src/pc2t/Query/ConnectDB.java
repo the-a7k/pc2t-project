@@ -2,9 +2,7 @@ package pc2t.Query;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 public class ConnectDB {
 	private static volatile Connection dbConnection;
@@ -16,7 +14,7 @@ public class ConnectDB {
 				if (dbConnection == null) {
 					try {
 						Class.forName("org.sqlite.JDBC");
-						dbConnection = DriverManager.getConnection(ConnectDB.DB_FILE_PATH);
+						dbConnection = DriverManager.getConnection(DB_FILE_PATH);
 					} 
 					catch (SQLException | ClassNotFoundException e) {
 						e.printStackTrace();

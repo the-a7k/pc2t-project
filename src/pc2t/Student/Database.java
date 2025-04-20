@@ -1,5 +1,11 @@
 package pc2t.Student;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 
@@ -13,10 +19,6 @@ public class Database implements IDatabase {
 		this.students = new ArrayList<>();
 	}
 	
-	public void addStudent(Student newStudent) {
-		this.students.add(newStudent);
-	}
-	
 	public Student findStudent(int id) {
 		for (int i = 0; i < this.students.size(); i++) {
 			if (this.students.get(i).getID() == id) {
@@ -24,6 +26,18 @@ public class Database implements IDatabase {
 			}
 		}
 		return null;
+	}
+	
+	public ArrayList<Student> getStudents() {
+		return students;
+	}
+	
+	public void setStudents(ArrayList<Student> students) {
+		this.students = students;
+	}
+
+	public void addStudent(Student newStudent) {
+		this.students.add(newStudent);
 	}
 	
 	public boolean addStudentGrade(int id, int grade) {
@@ -42,22 +56,12 @@ public class Database implements IDatabase {
 		return this.students.remove(student);
 	}
 	
-	public void printSpecialAbility(int id) {
-		Student s = findStudent(id);
-		if (s == null) {
-			System.out.println("Error: Cannot print special ability, student with this ID does not exist.");
-		}
-		else {
-			System.out.println("Special ability of the student " + s.getFullName() + " from the study programme " + s.getStudyProgramme() + ": " + s.specialAbility());
-		}
-	}
-	
 	public void printStudyProgrammeSortedStudents() {
 		students.sort(Comparator.comparing(Student::getLastName));
 
         for (StudyProgramme sp : StudyProgramme.values()) {
         	int programmeStudentCount = 0;
-        	System.out.println("Showing all students from study programme " + sp + ":");
+        	System.out.println("Zobrazeni vsech studentu ze studijniho programu: " + sp + ":");
         	
 	        for (Student s : this.students) {
 				if (s.getStudyProgramme() != sp) {
@@ -68,7 +72,7 @@ public class Database implements IDatabase {
 	        }
 	        
 	        if (programmeStudentCount == 0) {
-	        	System.out.println("\tThis study programme (" + sp + ") has no students.");
+	        	System.out.println("\tTento studijni program (" + sp + ") nema zadne studenty.");
 	        }
         }
         
@@ -87,7 +91,7 @@ public class Database implements IDatabase {
 				programmeStudentCount++;			
 			}
 			
-			System.out.println("Total student count from study programme " + sp + ": " + programmeStudentCount);
+			System.out.println("Celkovy pocet studentu ze studijniho programu " + sp + ": " + programmeStudentCount);
 		}
 	}
 	
@@ -107,12 +111,76 @@ public class Database implements IDatabase {
 			}
 			
 			if (totalGradeCount == 0 || totalGradeSum == 0) {
-				System.out.println("Total grade average from study programme " + sp + ": " + 0);
+				System.out.println("Celkovy obecny studijni prumer v oboru " + sp + ": " + 0);
 			}
 			
 			else {
-				System.out.println("Total grade average from study programme " + sp + ": " + (float)totalGradeSum / totalGradeCount);
+				System.out.println("Celkovy obecny studijni prumer v oboru " + sp + ": " + (float)totalGradeSum / totalGradeCount);
 			}
+		}
+	}
+	
+	public boolean saveToFile(int id, String filename) {
+		Student student = findStudent(id);
+		
+		if (student == null) {
+			return false;
+		}
+		
+		try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename))) {
+			bw.write(student.getFirstName());
+			bw.newLine();
+			bw.write(student.getLastName());
+			bw.newLine();
+			bw.write(String.valueOf(student.getYearBorn()));
+			bw.newLine();
+			bw.write(student.getStudyProgramme().name());
+			bw.newLine();
+			
+			for (int grade : student.getGrades()) {
+				bw.write(String.valueOf(grade));
+				bw.newLine();
+			}
+			return true;
+		}
+		catch (IOException e) {
+			return false;
+		}
+	}
+	
+	public Student loadFromFile(String fileName) {
+		String gradeLine;
+		System.out.println(fileName);
+
+		try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+			String firstName = br.readLine();
+			String lastName = br.readLine();
+			int yearBorn = Integer.parseInt(br.readLine());
+			StudyProgramme studyProgramme = StudyProgramme.valueOf(br.readLine());
+			
+			
+			if (studyProgramme == StudyProgramme.IBE) {
+				StudentIBE studentIBE = new StudentIBE(firstName, lastName, yearBorn);
+	            while ((gradeLine = br.readLine()) != null) {
+	            	studentIBE.addGrade(Integer.parseInt(gradeLine));
+	            }
+	            return studentIBE;
+			}
+			
+			else if (studyProgramme == StudyProgramme.TLI) {
+				StudentTLI studentTLI = new StudentTLI(firstName, lastName, yearBorn);
+	            while ((gradeLine = br.readLine()) != null) {
+	            	studentTLI.addGrade(Integer.parseInt(gradeLine));
+	            }
+	            return studentTLI;
+			}
+			return null;
+		} 
+		catch (FileNotFoundException e) {
+			return null;
+		} 
+		catch (IOException e) {
+			return null;
 		}
 	}
 }

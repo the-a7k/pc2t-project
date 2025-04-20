@@ -23,7 +23,7 @@ public class StudentIBE extends Student {
 		StringBuilder hexString = new StringBuilder();
 		
 		try {
-			MessageDigest digest = MessageDigest.getInstance(hashChoice.getAlgorithm());
+			MessageDigest digest = MessageDigest.getInstance(hashChoice.name());
 			byte[] hashBytes = digest.digest(this.getFullName().getBytes());
 			
 			for (byte b : hashBytes) {
@@ -33,7 +33,7 @@ public class StudentIBE extends Student {
 		}
 		
 		catch (NoSuchAlgorithmException ex) {
-			throw new RuntimeException("Invalid hashing algorithm: " + hashChoice.getAlgorithm());
+			throw new RuntimeException("Invalid hashing algorithm: " + hashChoice.name());
 		}
 		catch (Exception ex) {
 			throw new RuntimeException("Unknown error while converting to hash.");
@@ -42,21 +42,11 @@ public class StudentIBE extends Student {
 	}
 	
 	public enum HashVariant {
-		MD5("MD5"),
-		SHA1("SHA-1"),
-		SHA256("SHA-256"),
-		SHA384("SHA-384"),
-		SHA512("SHA-512");
-		
-		private String algorithm;
-		
-		HashVariant(String algorithm) {
-			this.algorithm = algorithm;
-		}
-		
-		public String getAlgorithm() {
-			return this.algorithm;
-		}
+		MD5,
+		SHA1,
+		SHA256,
+		SHA384,
+		SHA512
 	}
 
 }
