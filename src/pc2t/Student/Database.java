@@ -8,36 +8,41 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 
 import pc2t.Interface.IDatabase;
 import pc2t.Student.Student.StudyProgramme;
 
 public class Database implements IDatabase {
-	private ArrayList<Student> students;
+	private HashMap<Integer, Student> students;
 
 	public Database() {
-		this.students = new ArrayList<>();
+		this.students = new HashMap<>();
 	}
 	
 	public Student findStudent(int id) {
-		for (int i = 0; i < this.students.size(); i++) {
-			if (this.students.get(i).getID() == id) {
-				return this.students.get(i);
+		for (var student : this.students.entrySet()) {
+			if (student.getKey() == id) {
+				return student.getValue();
 			}
 		}
 		return null;
 	}
 	
-	public ArrayList<Student> getStudents() {
+	public HashMap<Integer, Student> getStudents() {
 		return students;
 	}
 	
-	public void setStudents(ArrayList<Student> students) {
+	public void setStudents(HashMap<Integer, Student> students) {
 		this.students = students;
+	}
+	
+	public ArrayList<Student> getStudentsArrayList() {
+		return new ArrayList<>(this.students.values());
 	}
 
 	public void addStudent(Student newStudent) {
-		this.students.add(newStudent);
+		this.students.put(newStudent.getID(), newStudent);
 	}
 	
 	public boolean addStudentGrade(int id, int grade) {
@@ -53,17 +58,18 @@ public class Database implements IDatabase {
 		if (student == null) {
 			return false;
 		}
-		return this.students.remove(student);
+		return this.students.remove(id, student);
 	}
 	
 	public void printStudyProgrammeSortedStudents() {
-		students.sort(Comparator.comparing(Student::getLastName));
+        ArrayList<Student> studentsArrayList = getStudentsArrayList();
+        studentsArrayList.sort(Comparator.comparing(Student::getLastName));
 
         for (StudyProgramme sp : StudyProgramme.values()) {
         	int programmeStudentCount = 0;
         	System.out.println("Zobrazeni vsech studentu ze studijniho programu: " + sp + ":");
         	
-	        for (Student s : this.students) {
+	        for (Student s : studentsArrayList) {
 				if (s.getStudyProgramme() != sp) {
 					continue;
 				}
@@ -75,17 +81,14 @@ public class Database implements IDatabase {
 	        	System.out.println("\tTento studijni program (" + sp + ") nema zadne studenty.");
 	        }
         }
-        
-        students.sort(Comparator.comparing(Student::getID));
 	}
 	
 	public void printStudyProgrammeStudentCount() {
-		
 		for (StudyProgramme sp : StudyProgramme.values()) {
 			int programmeStudentCount = 0;
 			
-			for (int i = 0; i < this.students.size(); i++) {
-				if (this.students.get(i).getStudyProgramme() != sp) {
+			for (var student : this.students.entrySet()) {
+				if (student.getValue().getStudyProgramme() != sp) {
 					continue;
 				}
 				programmeStudentCount++;			
@@ -100,8 +103,8 @@ public class Database implements IDatabase {
 			int totalGradeCount = 0;
 			int totalGradeSum = 0;
 			
-			for (int i = 0; i < this.students.size(); i++) {
-				Student currentStudent = this.students.get(i);
+			for (var student : this.students.entrySet()) {
+				Student currentStudent = student.getValue();
 				
 				if (currentStudent.getStudyProgramme() != sp) {
 					continue;
@@ -150,7 +153,6 @@ public class Database implements IDatabase {
 	
 	public Student loadFromFile(String fileName) {
 		String gradeLine;
-		System.out.println(fileName);
 
 		try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
 			String firstName = br.readLine();

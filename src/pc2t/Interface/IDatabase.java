@@ -1,13 +1,13 @@
 package pc2t.Interface;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 import pc2t.Student.Student;
 
 public interface IDatabase {
 	
 	public void addStudent(Student newStudent);
-	public void setStudents(ArrayList<Student> students);
+	public void setStudents(HashMap<Integer, Student> students);
 	public Student findStudent(int id);
 	public boolean addStudentGrade(int id, int grade);
 	public boolean removeStudent(int id);

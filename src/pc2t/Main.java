@@ -14,7 +14,7 @@ public class Main {
 
 	public static void main(String[] args) {
 	    Connection conn = ConnectDB.connect();
-	    	    
+
 	    printProgramHelp();
 	    programLoop(conn);
 	    
@@ -134,6 +134,7 @@ public class Main {
 		    			System.out.println("Student byl uspesne odstranen.");
 		    		}
 		    		
+		    		break;
 		    		
 	    		case 4:
 		    		System.out.println("Zadejte ID studenta pro vypsani informaci: ");

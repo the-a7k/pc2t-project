@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import pc2t.Student.Student;
 import pc2t.Student.Student.StudyProgramme;
@@ -48,11 +49,11 @@ public class DriverDB {
     }
 	
 	public static boolean initStudents(Connection conn) {
-        String sql = "CREATE TABLE IF NOT EXISTS students (" +
-                "id INT PRIMARY KEY," 				+
-                "first_name TEXT," 					+
-                "last_name TEXT,"					+
-                "year_born INT,"					+
+        String sql = "CREATE TABLE IF NOT EXISTS students (" 	+
+                "id INTEGER PRIMARY KEY AUTOINCREMENT," 		+
+                "first_name TEXT," 								+
+                "last_name TEXT,"								+
+                "year_born INT,"								+
                 "study_programme VARCHAR(50))";
         
         try (Statement stmt = conn.createStatement()) {
@@ -67,10 +68,10 @@ public class DriverDB {
 	}
 	
     public static boolean initGrades(Connection conn) {
-        String sql = "CREATE TABLE IF NOT EXISTS grades (" +
-                     "id INT PRIMARY KEY, "		+
-                     "student_id INT, " 		+
-                     "grade INT,"				+ 
+        String sql = "CREATE TABLE IF NOT EXISTS grades (" 			+
+                     "id INTEGER PRIMARY KEY AUTOINCREMENT, "		+
+                     "student_id INT, " 							+
+                     "grade INT,"									+ 
                      "FOREIGN KEY (student_id) REFERENCES students(id))";
 
         try (Statement stmt = conn.createStatement()) {
@@ -83,15 +84,15 @@ public class DriverDB {
         }
     }
     
-    public static boolean insertStudents(Connection conn, ArrayList<Student> students) {
+    public static boolean insertStudents(Connection conn, HashMap<Integer, Student> students) {
         String sql = "INSERT INTO students (id, first_name, last_name, year_born, study_programme) VALUES (?, ?, ?, ?, ?)";
-    	for (Student student : students) {
+        for (var student : students.entrySet()) {
             try (PreparedStatement prepare = conn.prepareStatement(sql)) {
-            	prepare.setInt(1, student.getID());
-            	prepare.setString(2, student.getFirstName());
-            	prepare.setString(3, student.getLastName());
-            	prepare.setInt(4, student.getYearBorn());
-            	prepare.setString(5, student.getStudyProgramme().name());
+            	prepare.setInt(1, student.getKey());
+            	prepare.setString(2, student.getValue().getFirstName());
+            	prepare.setString(3, student.getValue().getLastName());
+            	prepare.setInt(4, student.getValue().getYearBorn());
+            	prepare.setString(5, student.getValue().getStudyProgramme().name());
             	prepare.executeUpdate();
             } 
             catch (SQLException e) {
@@ -101,10 +102,10 @@ public class DriverDB {
     	}
     	
         sql = "INSERT INTO grades (student_id, grade) VALUES (?, ?)";
-    	for (Student student : students) {
-    		for (Integer grade : student.getGrades()) {
+        for (var student : students.entrySet()) {
+    		for (Integer grade : student.getValue().getGrades()) {
     	        try (PreparedStatement prepare = conn.prepareStatement(sql)) {
-    	        	prepare.setInt(1, student.getID());
+    	        	prepare.setInt(1, student.getKey());
     	        	prepare.setInt(2, grade);
     	        	prepare.executeUpdate();
     	        } 
@@ -117,8 +118,8 @@ public class DriverDB {
     	return true;
     }
     
-    public static ArrayList<Student> loadStudents(Connection conn) {
-        ArrayList<Student> students = new ArrayList<>();
+    public static HashMap<Integer, Student> loadStudents(Connection conn) {
+        HashMap<Integer, Student> students = new HashMap<>();
         String sql = "SELECT * FROM students";
         
         try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
@@ -133,13 +134,13 @@ public class DriverDB {
                 if (StudyProgramme.valueOf(studyProgramme) == StudyProgramme.IBE) {
                     StudentIBE student = new StudentIBE(firstName, lastName, yearBorn);
                     student.setID(id);
-                    students.add(student);
+                    students.put(id, student);
                 }
                 
                 else if (StudyProgramme.valueOf(studyProgramme) == StudyProgramme.TLI) {
                     StudentTLI student = new StudentTLI(firstName, lastName, yearBorn);
                     student.setID(id);
-                    students.add(student);
+                    students.put(id, student);
                 }
                 
                 else {
@@ -159,9 +160,9 @@ public class DriverDB {
                 int id = rs.getInt("student_id");
                 int grade = rs.getInt("grade");
 
-                for (Student student : students) {
-					if (student.getID() == id) {
-						student.addGrade(grade);
+                for (var student : students.entrySet()) {
+					if (student.getKey() == id) {
+						student.getValue().addGrade(grade);
 					}
 				}
             }
